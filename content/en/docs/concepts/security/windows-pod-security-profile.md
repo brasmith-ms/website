@@ -22,8 +22,8 @@ This guide outlines the _policies_ for Windows Pod Security Standards and can be
 | <strong style="white-space: nowrap">Restricted</strong> | Unsupported until a standardized identifier for Windows pods is implemented. Windows pods _may_ be broken by the restricted field, which requires setting linux-specific settings (such as seccomp profile, run as non root, and disallow privilege escalation). If the Kubelet and/or container runtime choose to ignore these linux-specific values at runtime, then windows pods should still be allowed under the restricted profile, although the profile will not add additional enforcement over baseline (for Windows). |
 
 <!-- body -->
-
 ## Profile Details
+Each of the profiles below detail which policies must be explicitly set. Any policy not detailed in the profile which is also not in the list of policies ignored by Windows can assume supported configuration on a Windows node.
 
 ### Privileged
 
@@ -104,6 +104,7 @@ This guide outlines the _policies_ for Windows Pod Security Standards and can be
 		</tr>
 		<tr>
 			<td style="white-space: nowrap">HostPath Volumes</td>
+			<td>No</td>
 			<td>
 				<p>Job objects have full access to write to the root file system. HostProcess containers design do not have a way to control access to read only. Instead they can be run as users with limited/scoped files system access via RunAsUsername</p>
 				<p><strong>Restricted Fields</strong></p>
@@ -117,46 +118,15 @@ This guide outlines the _policies_ for Windows Pod Security Standards and can be
 			</td>
 		</tr>
 		<tr>
-			<td style="white-space: nowrap">AppArmor</td>
-			<td>
-				<p>On supported hosts, the <code>runtime/default</code> AppArmor profile is applied by default. The baseline policy should prevent overriding or disabling the default AppArmor profile, or restrict overrides to an allowed set of profiles.</p>
-				<p><strong>Restricted Fields</strong></p>
-				<ul>
-					<li><code>metadata.annotations["container.apparmor.security.beta.kubernetes.io/*"]</code></li>
-				</ul>
-				<p><strong>Allowed Values</strong></p>
-				<ul>
-					<li>Undefined/nil</li>
-					<li><code>runtime/default</code></li>
-				</ul>
-			</td>
-		</tr>
-		<tr>
 			<td style="white-space: nowrap">SELinux</td>
+			<td>No</td>
 			<td>
 				<p>Setting the SELinux type is restricted, and setting a custom SELinux user or role option is forbidden.</p>
 				<p><strong>Restricted Fields</strong></p>
 				<ul>
-					<li><code>spec.securityContext.seLinuxOptions.type</code></li>
-					<li><code>spec.containers[*].securityContext.seLinuxOptions.type</code></li>
-					<li><code>spec.initContainers[*].securityContext.seLinuxOptions.type</code></li>
-				</ul>
-				<p><strong>Allowed Values</strong></p>
-				<ul>
-					<li>Undefined/nil</li>
-					<li><code>container_t</code></li>
-					<li><code>container_init_t</code></li>
-					<li><code>container_kvm_t</code></li>
-				</ul>
-				<hr />
-				<p><strong>Restricted Fields</strong></p>
-				<ul>
-					<li><code>spec.securityContext.seLinuxOptions.user</code></li>
-					<li><code>spec.containers[*].securityContext.seLinuxOptions.user</code></li>
-					<li><code>spec.initContainers[*].securityContext.seLinuxOptions.user</code></li>
-					<li><code>spec.securityContext.seLinuxOptions.role</code></li>
-					<li><code>spec.containers[*].securityContext.seLinuxOptions.role</code></li>
-					<li><code>spec.initContainers[*].securityContext.seLinuxOptions.role</code></li>
+					<li><code>spec.securityContext.seLinuxOptions.*</code></li>
+					<li><code>spec.containers[*].securityContext.seLinuxOptions.*</code></li>
+					<li><code>spec.initContainers[*].securityContext.seLinuxOptions.*</code></li>
 				</ul>
 				<p><strong>Allowed Values</strong></p>
 				<ul>
